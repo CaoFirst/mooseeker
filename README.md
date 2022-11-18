@@ -1,7 +1,7 @@
 <!--
  * @Autor: caoyh
  * @Date: 2022-11-17 09:27:27
- * @LastEditTime: 2022-11-18 10:10:54
+ * @LastEditTime: 2022-11-18 13:47:32
 -->
 # MooSeeker
 
@@ -14,7 +14,7 @@ MooSeeker is a metabolic pathway design tool based on the multi-objective optimi
 
 The experiment results show that MooSeeker is capable of constructing the experimentally validated pathways and finding the higher-performance pathway than the single-objective-based methods. 
 
-![The overveiw of MooSeeker](images/overall.jpg)
+![The overveiw of MooSeeker](overall.jpg)
 
 ---
 
@@ -29,14 +29,21 @@ python utils/init_pool.py
 The improved NSGA-II algorithm based on the **encoding strategy**, **BioCrossover** and **BioMutation** operators is shown in `model/My_NSGAII.py`.
 
 ### 3. Train the model 
-According to different experiment, there are four types of config file for `multi-glycolysis.yaml`, `multi-vanillin.yaml`, `single-glycolysis.yaml`, `single-vanillin.yaml`.
+According to different experiment, there are four types of config file for `multi_glycolysis.yaml`, `multi_vanillin.yaml`, `single_glycolysis.yaml`, `single_vanillin.yaml`.
+
 We can train the model based on different config file for different result.
 
 For example:
 ```bash
-python main.py --config config/multi-vanillin.yaml
+python main.py --algorithm multi --production vanillin
 ```
+Here, 
+- `--algorithm` sets the multi- or single- algorithm for metabolic pathway design.
+- `--production` sets the glycoly or vanillin production for metabolic pathway design.
 
+The experimental results are saved into the `cache/result_*`. 
+
+### 4. Analysis the result
 
 ## Reference
 
