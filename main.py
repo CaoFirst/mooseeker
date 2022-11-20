@@ -1,7 +1,7 @@
 '''
 Autor: caoyh
 Date: 2022-11-18 09:37:01
-LastEditTime: 2022-11-20 16:43:19
+LastEditTime: 2022-11-20 22:06:09
 '''
 import os
 import sys
@@ -23,51 +23,58 @@ from log.logger import Logger
 
 def parser():
     parser = ArgumentParser('MooSeeker')
-    parser.add_argument('-alg', '--algorithm', default='multi', help='Multi or Single objective algorithm to use') ## multi OR single 
+    parser.add_argument('-alg', '--algorithm', default='single', help='Multi or Single objective algorithm to use') ## multi OR single 
     parser.add_argument('-p', '--production', default='vanillin', help='Glycolysis or Vanillin to produce') # glycolysis or vanillin
-    parser.add_argument('-w1', '--weight1', default=0.33, help='The weight of length for single objective algorithm')
-    parser.add_argument('-w2', '--weight2', default=0.33, help='The weight of gibbs for single objective algorithm')
-    parser.add_argument('-w3', '--weight3', default=0.33, help='The weight of yield for single objective algorithm')
+    parser.add_argument('-w1', '--weight1', default=0.33, type=float, help='The weight of length for single objective algorithm')
+    parser.add_argument('-w2', '--weight2', default=0.33, type=float, help='The weight of gibbs for single objective algorithm')
+    parser.add_argument('-w3', '--weight3', default=0.33, type=float, help='The weight of yield for single objective algorithm')
     args = parser.parse_args()
     
-    args.project = args.algorithm + '_' + args.production
-
+    if args.algorithm=='multi':
+        args.project = '_'.join((args.algorithm,  args.production))
+    elif args.algorithm=='single':
+        args.project = '_'.join((args.algorithm, args.production, str(int(args.weight1*100)), str(int(args.weight2*100)), str(int(args.weight3*100))))
     return args
 
 
-def train(args, cfg):
+def train(args, cfg, log):
+    log.logger.info('=====> Train for %s<====='%(args.project))
+    result_dir = cfg['file_path']['result_dir'] + args.project + '/'
+    if not os.path.exists(result_dir): os.mkdir(result_dir)
     if args.algorithm == 'multi':
-        algorithm = NSGA2(pop_size=cfg['alg']['pop_size'],
+        algorithm = NSGA2(pop_size=cfg['init']['pop_size'],
                     sampling=BioSampling(),
                     crossover=BioCrossover(),
                     mutation=BioMutation(),
                     eliminate_duplicates=BioDuplicateElimination())
 
-        res = minimize(problem=MultiProblem(cfg),
+        res = minimize(problem=MultiProblem(args, cfg, log),
                     algorithm=algorithm,
-                    termination=('n_gen', cfg['alg']['gen']),
+                    termination=('n_gen', cfg['init']['gen']),
                     seed=1,
                     callback=BioCallback(),
                     verbose=True,
                     save_history=True)
 
     if args.algorithm == 'single':
-        algorithm = GA(pop_size=cfg['alg']['pop_size'],
+        algorithm = GA(pop_size=cfg['init']['pop_size'],
                         sampling=BioSampling(),
                         crossover=BioCrossover(),
                         mutation=BioMutation(),
                         eliminate_duplicates=BioDuplicateElimination())
 
-        res = minimize(problem=SingleProblem(cfg),
+        res = minimize(problem=SingleProblem(args, cfg, log),
                     algorithm=algorithm,
-                    termination=('n_gen', cfg['alg']['gen']),
+                    termination=('n_gen', cfg['init']['gen']),
                     seed=1,
                     callback=BioCallback(),
                     verbose=True,
                     save_history=True)
 
     # save checkpoint 
-    with open(cfg['file_path']['result_dir']+"checkpoint_"+time.strftime("%Y%m%d"), "wb") as f:
+    checkpoint_file = cfg['file_path']['checkpoint_dir']+args.project+'_'+time.strftime("%Y%m%d")
+    log.logger.info('=====> save checkpoint to file:  %s<====='%(checkpoint_file))
+    with open(checkpoint_file, "wb") as f:
         dill.dump(algorithm, f)
 
     # print("Best solution found: \nF = %s\nX = %s" % (res.F, res.X[0][0].chrom.travel()))
@@ -103,34 +110,19 @@ def train(args, cfg):
         hist_F.append(opt.get("F")[feas].tolist()) 
     
     # save to file 
-    print('Save result and history !')
-    np.savez(cfg['file_path']['result_dir']+'result.npz', X=res.X, F=res.F, CV=res.CV, G=res.G, dtype=object)
-    np.savez(cfg['file_path']['result_dir']+'history.npz', n_evals=n_evals, X=hist_X, F=hist_F, cv=hist_cv, cv_avg=hist_cv_avg, dtype=object)
-    print('=====Done!=====')
+    log.logger.info('=====> Save result and history ! <=====')
+    np.savez(result_dir+'result.npz', X=res.X, F=res.F, CV=res.CV, G=res.G, dtype=object)
+    np.savez(result_dir+'history.npz', n_evals=n_evals, X=hist_X, F=hist_F, cv=hist_cv, cv_avg=hist_cv_avg, dtype=object)
+    log.logger.info('=====Done!=====')
     
 
 if __name__ == '__main__':
-    # parser = ArgumentParser('MooSeeker')
-    # parser.add_argument('-alg', '--algorithm', default='multi', help='Multi or Single objective algorithm to use') ## multi OR single 
-    # parser.add_argument('-p', '--production', default='vanillin', help='Glycolysis or Vanillin to produce') # glycolysis or vanillin
-    # args = parser.parse_args()
-    # args.project = args.algorithm + '_' + args.production
-
-    # print(args)
-    args = parser()
-    cfg = get_config()
-    log_file = cfg['file_path']['log_dir'] + args.project+ '_' + time.strftime("%Y%m%d")+'.log'
-    log = Logger(log_file,level='info')
-
-    log.logger.info(args)
-
-    log.logger.info(type(args.weight3))
-
-
-    # config_file = 'config/' + args.algorithm + '_' + args.production + '.yaml'
-    # assert os.path.exists(config_file)
     
-    # cfg = get_config(config_file)
-    # train(args, cfg)
+    args = parser()
+    # print(args.project)
+    cfg = get_config()
+    log = Logger(cfg['file_path']['log_dir'] + args.project+ '_' + time.strftime("%Y%m%d")+'.log')
+
+    train(args, cfg, log)
 
     

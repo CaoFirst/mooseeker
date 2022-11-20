@@ -2,7 +2,7 @@
 Description: 
 Autor: caoyh
 Date: 2022-09-16 17:02:26
-LastEditTime: 2022-11-19 10:37:40
+LastEditTime: 2022-11-20 21:25:23
 '''
 # -*- coding: utf-8 -*-
 # @Author: Caoyh
@@ -89,7 +89,7 @@ if __name__=='__main__':
     
 
     # M00002
-    rxn_list = ['R07265', 'R11306', 'R04411', 'R04410', 'R09127', 'R06973', 'R00907', 'R13013', 'R13014']
+    rxn_list = ['R01788', 'R02737', 'R02780', 'R02628', 'R00724']
     
     result = get_gibbs(rxn_list)
 

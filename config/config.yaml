@@ -23,7 +23,7 @@ file_path:
 
 #----------------
 init:
-  gen: 10
+  gen: 30
   pop_size: 20
   NrMax: 20
 

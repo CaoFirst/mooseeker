@@ -339,6 +339,78 @@ def parse_equation(equation):
         return output
     return (stoichiometry_parse(reactants), stoichiometry_parse(products))
 
+
+def parser_equation_coef(equation):
+    eq_dict = {}
+    S, P = equation.rstrip().split(' <=> ')
+    S = S.split(' + ')
+    pat = '^\d+\ |^[1-9nm]+\ |^\([1-9nm]+\)\ |\([1-9nmx]+\)$|^\([nm][+-][nm\d]\)\ |^[nm][+-][nm1-3]\ |\([nm][+-][nmx\d]\)$'
+    for s in S[:]:
+        coef = re.findall(pat, s)
+        # REACOMODO COEFICIENTES
+        if len(coef) > 0:
+            s = s.strip().replace(coef[0], '', 1)
+        else:
+            coef = ['1']
+        # ----------------------------------------------------
+        # CORRECCIONES 更正
+        # ----------------------
+        coef = coef[0].strip()
+        coef = coef.replace('(n-2)', '98')
+        coef = coef.replace('(n-1)', '99')
+        coef = coef.replace('(n)', '100')
+        coef = coef.replace('(n+1)', '101')
+        coef = coef.replace('(n+2)', '102')
+        coef = coef.replace('(m-2)', '98')
+        coef = coef.replace('(m-1)', '99')
+        coef = coef.replace('(m)', '100')
+        coef = coef.replace('(m+1)', '101')
+        coef = coef.replace('(m+2)', '102')
+        coef = coef.replace('(n+m)', '200')
+        coef = coef.replace('(m+n)', '200')
+        coef = coef.replace('(n-x)', '90')
+        coef = coef.replace('n-1', '99')
+        coef = coef.replace('n+1', '101')
+        coef = coef.replace('n', '100')
+        coef = coef.replace('(x)', '10')
+
+        eq_dict[s] = float(coef[0]) * -1
+
+    # PROCESAR Y PARSEAR PRODUCTS
+    P = P.split(' + ')
+    for p in P[:]:
+        coef = re.findall(pat, p)
+
+        # REACOMODO COEFICIENTES
+        if len(coef) > 0:
+            p = p.replace(coef[0], '', 1)
+        else:
+            coef = ['1']
+
+        coef = coef[0].strip()
+        coef = coef.replace('(n-2)', '98')
+        coef = coef.replace('(n-1)', '99')
+        coef = coef.replace('(n)', '100')
+        coef = coef.replace('(n+1)', '101')
+        coef = coef.replace('(n+2)', '102')
+        coef = coef.replace('(m-2)', '98')
+        coef = coef.replace('(m-1)', '99')
+        coef = coef.replace('(m)', '100')
+        coef = coef.replace('(m+1)', '101')
+        coef = coef.replace('(m+2)', '102')
+        coef = coef.replace('(n+m)', '200')
+        coef = coef.replace('(m+n)', '200')
+        coef = coef.replace('(n-x)', '90')
+        coef = coef.replace('n-1', '99')
+        coef = coef.replace('n+1', '101')
+        coef = coef.replace('n', '100')
+        coef = coef.replace('(x)', '10')
+
+        eq_dict[p] = float(coef[0]) * 1
+    
+    return eq_dict
+
+
 # def split_equation(equation):
 #     eq_list = re.split(" +", equation)
 #     is_comp = re.compile("^C[0-9]{5}")
@@ -365,5 +437,8 @@ if __name__=='__main__':
     # rxn = 'R04936'
     # r = MyReaction(rxn)
 
-    eq = "C00677 + C00039(n) <=> C00013 + C00039(n+1)"
-    print(split_equation(eq))
+    # eq = "C00677 + C00039(n) <=> C00013 + C00039(n+1)" #R00379
+    # eq = 'C00404 + n C00001 <=> (n+1) C02174' #R00001
+    eq = 'C00043 + 2 C00003 + C00001 <=> C04573 + 2 C00004 + 2 C00080' #R00421
+    # print(split_equation(eq))
+    parse_equation(eq)

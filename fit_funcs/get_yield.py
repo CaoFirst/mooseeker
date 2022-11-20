@@ -28,42 +28,49 @@ if os.path.exists(dir + 'DatabaseVersions.csv'):
 rxn_dict = read_json(cfg['file_path']['all_rxn_dict'])
 cpd_dict = read_json(cfg['file_path']['all_cpd_dict'])
 
-def parse_equation(equation):
-    """Parses a KEGG reaction string into a tuple of lists of tuples."""
-    # Split the equation into lists
-    eq_list = re.split(" +", equation)
-    reactants = eq_list[0:eq_list.index("<=>")]
-    products = eq_list[eq_list.index("<=>")+1:]
-    output = {}
-    s = 1
-    for segment in reactants:
-        if re.match("^[0-9]+$", segment):
-            s = int(segment)
-            continue
-        if segment == "+":
-            continue
-        else:
-            output[segment] = -1 * s
-            s = 1
-    p = 1
-    for segment in products:
-        if re.match("^[0-9]+$", segment):
-            p = int(segment)
-            continue
-        if segment == "+":
-            continue
-        else:
-            output[segment] = p
-            # output.append((s,segment))
-            p = 1
-    return output
+# def parse_equation(equation): # -1: substrates  1: products
+#     """Parses a KEGG reaction string into a tuple of lists of tuples."""
+#     # Split the equation into lists
+#     # eq_list = re.split(" +", equation)
+#     # reactants = eq_list[0:eq_list.index("<=>")]
+#     # products = eq_list[eq_list.index("<=>")+1:]
+#     reactants, products = split_equation(equation)
+#     output = {}
+#     for s in reactants:
+#         output[s] = -1
+
+#     for p in products:
+#         output[p] = 1
+#     return output
+
+    # s = 1
+    # for segment in reactants:
+    #     if re.match("^[0-9]+$", segment):
+    #         s = int(segment)
+    #         continue
+    #     if segment == "+":
+    #         continue
+    #     else:
+    #         output[segment] = -1 * s
+    #         s = 1
+    # p = 1
+    # for segment in products:
+    #     if re.match("^[0-9]+$", segment):
+    #         p = int(segment)
+    #         continue
+    #     if segment == "+":
+    #         continue
+    #     else:
+    #         output[segment] = p
+    #         # output.append((s,segment))
+    #         p = 1
+    # return output
 
 
 def add_cpd2rxn(model, rxn):
-    
-    # r = MyReaction(rxn)
+
     r = rxn_dict[rxn]
-    rxn_coff = parse_equation(r['equation'])
+    rxn_coff = parser_equation_coef(r['equation'])
     reactants, products = split_equation(r['equation'])
     
     names = locals()
@@ -142,8 +149,8 @@ def get_yield(rxn_list):
         r = rxn_dict[rxn]
 
         # First Judge rxn is already in model.reactions
-        if r["identifiers"]['BiGG']!=None:
-            for rid in r["identifiers"]['BiGG']:
+        if r['bigg_id']!=None:
+            for rid in r['bigg_id']:
                 if Reaction(rid) in model.reactions: 
                     # print('%s is already in model' %(rxn))
                     obj_rxn_id = rid
@@ -191,7 +198,8 @@ def get_yield(rxn_list):
     
 
 def main():
-    rxn_list = ['R07265', 'R11306', 'R04411', 'R04410', 'R09127', 'R06973', 'R00907']
+    # rxn_list = ['R07265', 'R11306', 'R04411', 'R04410', 'R09127', 'R06973']
+    rxn_list = ['R01788', 'R02737', 'R02780', 'R02628', 'R00724']
     print(get_yield(rxn_list))
 
 if __name__ == "__main__":
