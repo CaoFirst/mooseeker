@@ -339,11 +339,21 @@ def parse_equation(equation):
         return output
     return (stoichiometry_parse(reactants), stoichiometry_parse(products))
 
+# def split_equation(equation):
+#     eq_list = re.split(" +", equation)
+#     is_comp = re.compile("^C[0-9]{5}")
+#     def check_func(string):
+#         return is_comp.match(string).group()
+#     reactants = list(set(filter(check_func, eq_list[0:eq_list.index("<=>")])))
+#     products = list(set(filter(check_func, eq_list[eq_list.index("<=>")+1:])))
+#     return reactants, products
+
+
 def split_equation(equation):
-    eq_list = re.split(" +", equation)
-    is_comp = re.compile("^C[0-9]{5}")
-    reactants = list(set(filter(is_comp.match, eq_list[0:eq_list.index("<=>")])))
-    products = list(set(filter(is_comp.match, eq_list[eq_list.index("<=>")+1:])))
+    _reactants, _products = equation.split(' <=> ')
+    pat = re.compile("C[0-9]{5}")
+    reactants = list(set(pat.findall(_reactants)))
+    products = list(set(pat.findall(_products)))
     return reactants, products
     
 
@@ -355,5 +365,5 @@ if __name__=='__main__':
     # rxn = 'R04936'
     # r = MyReaction(rxn)
 
-    eq = "C00106 + C00028 + C00001 <=> C00813 + C00030"
+    eq = "C00677 + C00039(n) <=> C00013 + C00039(n+1)"
     print(split_equation(eq))

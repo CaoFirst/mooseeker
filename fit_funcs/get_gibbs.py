@@ -2,7 +2,7 @@
 Description: 
 Autor: caoyh
 Date: 2022-09-16 17:02:26
-LastEditTime: 2022-11-17 17:04:21
+LastEditTime: 2022-11-19 10:37:40
 '''
 # -*- coding: utf-8 -*-
 # @Author: Caoyh
@@ -23,6 +23,7 @@ from kegg_helper.pykegg import split_equation
 from fit_funcs.gibbs.mdf import *
 from utils import read_json
 from utils import get_config
+
 cfg = get_config()
 
 
@@ -35,27 +36,27 @@ def get_gibbs(rxn_list):
     reaction = []
     drGs = []
     con = []
-    cpb_list = []
+    cpb_list = set()
 
     for rxn in rxn_list:
         reaction += [rxn + '\t' + rxn_dict[rxn]['equation']]
         try: 
             # 如果没有这个值 或者没有这个反应，则认为为0
             drGs += [rxn + '\t' + str(dG_dict[rxn]['dG_Mean'])] 
-        except Exception as e:
+        except Exception as e: # dG_dict 没有 R13013
             print(e)
             drGs += [rxn + '\t' + str(0)] 
 
         s_list, p_list = split_equation(rxn_dict[rxn]['equation'])
 
-        for s in s_list:
-            if s in cpb_list: continue
-            else: cpb_list.append(cpd_dict[s])
-        for p in p_list:
-            if p in cpb_list: continue
-            else: cpb_list.append(cpd_dict[p])
+        for c in s_list+p_list:
+            try:
+                cpb_list.add(c)
+            except Exception as e:
+                print(e)
+                continue
 
-    for cpb in cpb_list:
+    for cpb in list(cpb_list):
         if cpb in cons_list[0]:
             idx = cons_list[0].index(cpb)
             # min = cons_list[1][idx]
@@ -88,7 +89,7 @@ if __name__=='__main__':
     
 
     # M00002
-    rxn_list = ['R07265', 'R11306', 'R04411', 'R04410', 'R09127', 'R06973', 'R00907']
+    rxn_list = ['R07265', 'R11306', 'R04411', 'R04410', 'R09127', 'R06973', 'R00907', 'R13013', 'R13014']
     
     result = get_gibbs(rxn_list)
 

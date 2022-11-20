@@ -2,7 +2,7 @@
 Description: 
 Autor: caoyh
 Date: 2022-11-16 11:30:14
-LastEditTime: 2022-11-17 14:20:23
+LastEditTime: 2022-11-20 16:28:54
 '''
 # -*- coding: utf-8 -*-
 # @Author: Caoyh
@@ -52,11 +52,19 @@ class SingleLinkList(object):
     def clear(self):
         self._head = None
 
+    def get_rxn_dict(self):
+        rxn_dict = {}
+        cur = self._head 
+        while cur != None:
+            rxn_dict[cur.reaction['kegg_id']] = cur.reaction['equation']
+            cur = cur.next
+        return rxn_dict
+
     def get_rxn_list(self):
         rxn_list = []
         cur = self._head 
         while cur != None:
-            rxn_list.append(cur.reaction['identifiers']['KEGG'][0])
+            rxn_list.append(cur.reaction['kegg_id'])
             cur = cur.next
         return rxn_list
 
@@ -76,8 +84,8 @@ class SingleLinkList(object):
         travel_list = []
         cur = self._head
         while cur != None:
-            travel_list.append([cur.reaction['identifiers']['KEGG'][0], cur.S, cur.P])
-            print(cur.reaction['identifiers']['KEGG'][0], ":", cur.S, " --> ", cur.P, ",")
+            travel_list.append([cur.reaction['kegg_id'], cur.S, cur.P])
+            print(cur.reaction['kegg_id'], ":", cur.S, " --> ", cur.P, ",")
             cur = cur.next
         return travel_list
 

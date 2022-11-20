@@ -1,7 +1,7 @@
 <!--
  * @Autor: caoyh
  * @Date: 2022-11-17 09:27:27
- * @LastEditTime: 2022-11-18 13:47:32
+ * @LastEditTime: 2022-11-20 11:42:14
 -->
 # MooSeeker
 
@@ -20,16 +20,21 @@ The experiment results show that MooSeeker is capable of constructing the experi
 
 ## Methodology
 MooSeeker is proposed for design metabolic pathway with 3 stages:
+
+> **KEGG database**:
+> The KEGG database is an open access database that can download through [KEGG API](https://www.kegg.jp/kegg/rest/keggapi.html).
+We provide `kegg_helper/kegg.py` to get necessary information from KEGG.
+
 ### 1. Initilize Pairs Pool based on the KEGG Database 
 
 ```bash
 python utils/init_pool.py
 ```
 ### 2. Improved NSGA-II algorithm for Metabolic Pathway 
-The improved NSGA-II algorithm based on the **encoding strategy**, **BioCrossover** and **BioMutation** operators is shown in `model/My_NSGAII.py`.
+The improved NSGA-II algorithm based on the **encoding strategy**, **BioCrossover** and **BioMutation** operators is shown in `model/BiOperators.py`. 
 
 ### 3. Train the model 
-According to different experiment, there are four types of config file for `multi_glycolysis.yaml`, `multi_vanillin.yaml`, `single_glycolysis.yaml`, `single_vanillin.yaml`.
+According to different experiment, there are four types of config file for `multi_glycolysis.yaml`, `multi_vanillin.yaml`, `single_glycolysis.yaml`, `single_vanillin.yaml`. 
 
 We can train the model based on different config file for different result.
 
