@@ -1,7 +1,7 @@
 <!--
  * @Autor: caoyh
  * @Date: 2022-11-17 09:27:27
- * @LastEditTime: 2022-11-20 11:42:14
+ * @LastEditTime: 2022-11-20 22:19:53
 -->
 # MooSeeker
 
@@ -34,8 +34,6 @@ python utils/init_pool.py
 The improved NSGA-II algorithm based on the **encoding strategy**, **BioCrossover** and **BioMutation** operators is shown in `model/BiOperators.py`. 
 
 ### 3. Train the model 
-According to different experiment, there are four types of config file for `multi_glycolysis.yaml`, `multi_vanillin.yaml`, `single_glycolysis.yaml`, `single_vanillin.yaml`. 
-
 We can train the model based on different config file for different result.
 
 For example:
@@ -46,7 +44,10 @@ Here,
 - `--algorithm` sets the multi- or single- algorithm for metabolic pathway design.
 - `--production` sets the glycoly or vanillin production for metabolic pathway design.
 
-The experimental results are saved into the `cache/result_*`. 
+Besides, when we train the single optimization algorithm, we can set different weigths for different objectives.
+There are three weights $w_1$, $w_2$ and $w_3$ for pathway length, gibbs and yield, respectively.
+
+Finally, the experimental results are saved into the `cache/result/`. 
 
 ### 4. Analysis the result
 
