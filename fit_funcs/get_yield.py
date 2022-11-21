@@ -28,45 +28,6 @@ if os.path.exists(dir + 'DatabaseVersions.csv'):
 rxn_dict = read_json(cfg['file_path']['all_rxn_dict'])
 cpd_dict = read_json(cfg['file_path']['all_cpd_dict'])
 
-# def parse_equation(equation): # -1: substrates  1: products
-#     """Parses a KEGG reaction string into a tuple of lists of tuples."""
-#     # Split the equation into lists
-#     # eq_list = re.split(" +", equation)
-#     # reactants = eq_list[0:eq_list.index("<=>")]
-#     # products = eq_list[eq_list.index("<=>")+1:]
-#     reactants, products = split_equation(equation)
-#     output = {}
-#     for s in reactants:
-#         output[s] = -1
-
-#     for p in products:
-#         output[p] = 1
-#     return output
-
-    # s = 1
-    # for segment in reactants:
-    #     if re.match("^[0-9]+$", segment):
-    #         s = int(segment)
-    #         continue
-    #     if segment == "+":
-    #         continue
-    #     else:
-    #         output[segment] = -1 * s
-    #         s = 1
-    # p = 1
-    # for segment in products:
-    #     if re.match("^[0-9]+$", segment):
-    #         p = int(segment)
-    #         continue
-    #     if segment == "+":
-    #         continue
-    #     else:
-    #         output[segment] = p
-    #         # output.append((s,segment))
-    #         p = 1
-    # return output
-
-
 def add_cpd2rxn(model, rxn):
 
     r = rxn_dict[rxn]
@@ -189,7 +150,7 @@ def get_yield(rxn_list):
                 maximum_yield = max_biomass / (-1*(model.reactions.get_by_id('EX_glc__D_e').flux)) #Target production[mmol/gDW*h]
                 # print('Maximum productivity =', max_biomass, 'mmol/gDW*h')
                 
-                if maximum_yield == 50: 
+                if maximum_yield > 49: 
                     print("This pathway EX_glc__D_e is 50, so the Maximum theoretical yield = 0")
                     return 0.01
                 else: 
@@ -206,5 +167,3 @@ if __name__ == "__main__":
 
     main()
 
-
-    
